@@ -1,0 +1,13 @@
+.login-section {
+  min-height: 80vh;
+  display: flex;
+  align-items: center;
+}
+
+.login-brand-icon {
+  width: 52px;
+  height: 52px;
+  background: linear-gradient(135deg, var(--primary), var(--accent));
+  color: #fff;
+  font-size: 1.6rem;
+}

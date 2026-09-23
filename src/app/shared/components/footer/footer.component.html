@@ -1,0 +1,68 @@
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-grid">
+      <!-- Brand Column -->
+      <div class="footer-brand">
+        <a routerLink="/" class="brand-logo text-white text-decoration-none d-flex align-items-center gap-2 mb-3">
+          <div class="brand-icon">✈️</div>
+          <span class="fs-4 fw-bold">Roamly<span class="text-accent">.</span></span>
+        </a>
+        <p>
+          Your companion for modern, stress-free travel. Curated destinations, intelligent cost calculation, and custom day-by-day itineraries.
+        </p>
+      </div>
+
+      <!-- Quick Links -->
+      <div>
+        <h4 class="footer-heading">Quick Links</h4>
+        <div class="footer-links">
+          <a routerLink="/" class="footer-link">Home</a>
+          <a routerLink="/destinations" class="footer-link">Destinations</a>
+          <a routerLink="/planner" class="footer-link">Trip Planner</a>
+          <a routerLink="/ai-advisor" class="footer-link">AI Travel Advisor</a>
+          <a routerLink="/contact" class="footer-link">Contact & Support</a>
+        </div>
+      </div>
+
+      <!-- Top Regions -->
+      <div>
+        <h4 class="footer-heading">Top Regions</h4>
+        <div class="footer-links">
+          <a [routerLink]="['/destinations']" [queryParams]="{region: 'Europe'}" class="footer-link">Europe Escapes</a>
+          <a [routerLink]="['/destinations']" [queryParams]="{region: 'Asia'}" class="footer-link">Asia Highlights</a>
+          <a [routerLink]="['/destinations']" [queryParams]="{region: 'Americas'}" class="footer-link">The Americas</a>
+          <a [routerLink]="['/destinations']" [queryParams]="{region: 'Oceania'}" class="footer-link">Oceania Wonders</a>
+        </div>
+      </div>
+
+      <!-- Newsletter Form -->
+      <div>
+        <h4 class="footer-heading">Travel Inspiration</h4>
+        <p class="newsletter-description">
+          Join 25,000+ travelers getting monthly secret guides and budget tips.
+        </p>
+        <form (ngSubmit)="onSubscribe()" class="newsletter-form">
+          <div class="newsletter-input-group">
+            <input
+              type="email"
+              name="newsletterEmail"
+              [(ngModel)]="email"
+              placeholder="Your email address"
+              required
+              aria-label="Email for newsletter" />
+            <button type="submit" class="btn btn-roamly-primary btn-sm px-3">Join</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <div>© 2026 Roamly Travel Planner. All rights reserved. Angular Standalone Architecture.</div>
+      <div class="d-flex gap-3">
+        <a routerLink="/contact" class="footer-link">Privacy Policy</a>
+        <a routerLink="/contact" class="footer-link">Terms of Service</a>
+        <a routerLink="/contact" class="footer-link">Help Center</a>
+      </div>
+    </div>
+  </div>
+</footer>

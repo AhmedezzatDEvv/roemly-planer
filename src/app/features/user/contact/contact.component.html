@@ -1,0 +1,180 @@
+<!-- 1. Header Banner -->
+<section class="contact-hero">
+  <div class="container">
+    <span class="section-badge contact-hero-badge">Get In Touch</span>
+    <h1 class="section-title text-white mb-2">Contact & Traveler Support</h1>
+    <p class="section-subtitle contact-hero-subtitle mx-auto">
+      Have questions about a destination, your custom itinerary, or budget forecasts? Our dedicated team is here to help.
+    </p>
+  </div>
+</section>
+
+<!-- 2. Main Contact & FAQ Section -->
+<main class="section">
+  <div class="container">
+    <div class="row g-5">
+
+      <!-- Left Column: Contact Form -->
+      <div class="col-lg-6">
+        <div class="bg-white p-4 p-md-5 rounded-4 border shadow-sm h-100">
+          <h2 class="fs-4 fw-bold text-dark mb-2">Send Us a Message</h2>
+          <p class="text-muted small mb-4">
+            Fill out the form below and one of our travel planning specialists will respond within 24 hours.
+          </p>
+
+          <!-- Success Alert Banner -->
+          @if (submittedSuccess()) {
+            <div class="alert alert-success alert-dismissible fade show p-4 mb-4 rounded-3 border-0 shadow-sm" role="alert">
+              <h4 class="alert-heading fw-bold fs-5 mb-2">🎉 Thank You, {{ submittedName() }}!</h4>
+              <p class="mb-0 small">
+                Your message regarding "<strong>{{ submittedSubject() }}</strong>" has been received. Our travel planners will get back to you at <strong>{{ submittedEmail() }}</strong> within 24 hours.
+              </p>
+              <button type="button" class="btn-close" (click)="submittedSuccess.set(false)" aria-label="Close"></button>
+            </div>
+          }
+
+          <form [formGroup]="contactForm" (ngSubmit)="onSubmit()">
+            <!-- Name -->
+            <div class="mb-3">
+              <label for="contact-name" class="form-label fw-semibold">
+                Full Name <span class="text-danger">*</span>
+              </label>
+              <input
+                type="text"
+                id="contact-name"
+                class="form-control"
+                [class.is-invalid]="isFieldInvalid('name')"
+                formControlName="name"
+                placeholder="e.g. Sarah Jenkins" />
+              @if (isFieldInvalid('name')) {
+                <div class="invalid-feedback">Please enter your full name (at least 2 characters).</div>
+              }
+            </div>
+
+            <!-- Email -->
+            <div class="mb-3">
+              <label for="contact-email" class="form-label fw-semibold">
+                Email Address <span class="text-danger">*</span>
+              </label>
+              <input
+                type="email"
+                id="contact-email"
+                class="form-control"
+                [class.is-invalid]="isFieldInvalid('email')"
+                formControlName="email"
+                placeholder="e.g. sarah@example.com" />
+              @if (isFieldInvalid('email')) {
+                <div class="invalid-feedback">Please enter a valid email address.</div>
+              }
+            </div>
+
+            <!-- Subject -->
+            <div class="mb-3">
+              <label for="contact-subject" class="form-label fw-semibold">
+                Inquiry Topic <span class="text-danger">*</span>
+              </label>
+              <select
+                id="contact-subject"
+                class="form-select"
+                [class.is-invalid]="isFieldInvalid('subject')"
+                formControlName="subject">
+                <option value="" disabled selected>Select a topic...</option>
+                <option value="Trip Planning Assistance">Trip Planning Assistance</option>
+                <option value="Budget Inquiry">Budget & Cost Calculation Inquiry</option>
+                <option value="Custom Itinerary Request">Custom Itinerary Request</option>
+                <option value="Technical Support">Platform / Technical Support</option>
+              </select>
+              @if (isFieldInvalid('subject')) {
+                <div class="invalid-feedback">Please select a topic for your inquiry.</div>
+              }
+            </div>
+
+            <!-- Message -->
+            <div class="mb-4">
+              <label for="contact-message" class="form-label fw-semibold">
+                Message <span class="text-danger">*</span>
+              </label>
+              <textarea
+                id="contact-message"
+                rows="4"
+                class="form-control"
+                [class.is-invalid]="isFieldInvalid('message')"
+                formControlName="message"
+                placeholder="Describe what you need help with..."></textarea>
+              @if (isFieldInvalid('message')) {
+                <div class="invalid-feedback">Message must be at least 10 characters long.</div>
+              }
+            </div>
+
+            <!-- Submit Button -->
+            <button
+              type="submit"
+              class="btn btn-roamly-primary w-100 py-3"
+              [disabled]="isSubmitting()">
+              @if (isSubmitting()) {
+                <span>Sending Message... ⏳</span>
+              } @else {
+                <span>Send Inquiry ➔</span>
+              }
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Right Column: Interactive FAQs & Direct Info -->
+      <div class="col-lg-6">
+        <div class="mb-4">
+          <h2 class="fs-4 fw-bold text-dark mb-2">Frequently Asked Questions</h2>
+          <p class="text-muted small mb-3">Instant answers to common questions about Roamly's tools.</p>
+
+          <!-- Accordion -->
+          <div class="accordion d-flex flex-column gap-3" id="roamlyFaqAccordion">
+            @for (faq of contactService.faqs(); track faq.id; let idx = $index) {
+              <div class="accordion-item rounded-3 border overflow-hidden">
+                <button
+                  type="button"
+                  class="accordion-header w-100 p-3 bg-white border-0 d-flex align-items-center justify-content-between fw-bold text-dark text-start"
+                  (click)="toggleAccordion(faq.id)">
+                  <span>{{ faq.question }}</span>
+                  <span class="fs-6 transition-transform" [style.transform]="activeFaqId() === faq.id ? 'rotate(180deg)' : 'rotate(0)'">
+                    ▼
+                  </span>
+                </button>
+                @if (activeFaqId() === faq.id) {
+                  <div class="p-3 bg-light border-top small text-secondary faq-answer">
+                    {{ faq.answer }}
+                  </div>
+                }
+              </div>
+            }
+          </div>
+        </div>
+
+        <!-- Contact Information Cards -->
+        <div class="row g-3 pt-3">
+          <div class="col-sm-6">
+            <div class="p-3 bg-white rounded-3 border d-flex gap-3 align-items-center">
+              <div class="fs-3">✉️</div>
+              <div>
+                <strong class="d-block text-dark small">Email Us</strong>
+                <span class="text-muted small">support&#64;roamly.com</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-sm-6">
+            <div class="p-3 bg-white rounded-3 border d-flex gap-3 align-items-center">
+              <div class="fs-3">🕒</div>
+              <div>
+                <strong class="d-block text-dark small">Response Time</strong>
+                <span class="text-muted small">Within 24 business hours</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+</main>

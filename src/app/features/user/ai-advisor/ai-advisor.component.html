@@ -1,0 +1,184 @@
+<!-- 1. Header Banner -->
+<section class="ai-hero">
+  <div class="container">
+    <span class="section-badge ai-hero-badge">Grounded RAG Pipeline</span>
+    <h1 class="section-title text-white mb-2">Roamly AI Travel Advisor</h1>
+    <p class="section-subtitle ai-hero-subtitle mx-auto">
+      Ask questions, get tailored trip recommendations, and compare destinations. Every answer is retrieved and grounded directly in Roamly's verified catalog and travel policies.
+    </p>
+  </div>
+</section>
+
+<!-- 2. Main Chat & Knowledge Base Layout -->
+<main class="section">
+  <div class="container">
+    <div class="row g-4">
+
+      <!-- Left Column: Chat Experience -->
+      <div class="col-lg-8">
+        <div class="bg-white rounded-4 border shadow-sm d-flex flex-column chat-shell">
+
+          <!-- Chat Header -->
+          <div class="p-3 border-bottom d-flex align-items-center justify-content-between bg-light rounded-top-4">
+            <div class="d-flex align-items-center gap-2">
+              <div class="fs-4">🤖</div>
+              <div>
+                <h5 class="mb-0 fw-bold fs-6">Roamly RAG Travel Assistant</h5>
+                <small class="text-success d-flex align-items-center gap-1">
+                  <span class="spinner-grow spinner-grow-sm text-success status-dot"></span>
+                  Grounding active (12 destinations + policies indexed)
+                </small>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              class="btn btn-roamly-outline btn-sm"
+              (click)="showKnowledgeDrawer.set(!showKnowledgeDrawer())">
+              {{ showKnowledgeDrawer() ? 'Hide Sources ✕' : 'Inspect Knowledge Sources 📚' }}
+            </button>
+          </div>
+
+          <!-- Message History Scroll Area -->
+          <div class="flex-grow-1 p-3 p-md-4 overflow-auto d-flex flex-column gap-3" #scrollContainer>
+            @for (msg of ragService.chatHistory(); track msg.id) {
+              <div class="d-flex flex-column" [class.align-items-end]="msg.sender === 'user'">
+                <div class="d-flex gap-2 message-row" [class.flex-row-reverse]="msg.sender === 'user'">
+                  <div class="fs-4 flex-shrink-0">
+                    {{ msg.sender === 'assistant' ? '✈️' : '👤' }}
+                  </div>
+
+                  <div
+                    class="p-3 rounded-4 message-text"
+                    [ngClass]="msg.sender === 'user' ? 'bg-primary text-white' : 'bg-light border text-dark'">
+                    {{ msg.text }}
+
+                    <!-- Retrieved Knowledge Source Grounding Badges -->
+                    @if (msg.retrievedSources && msg.retrievedSources.length > 0) {
+                      <div class="mt-3 pt-2 border-top">
+                        <small class="fw-bold d-block text-muted mb-2">
+                          🔍 Grounded in {{ msg.retrievedSources.length }} Retrieved Source(s):
+                        </small>
+                        <div class="d-flex flex-column gap-2">
+                          @for (source of msg.retrievedSources; track source.chunk.id) {
+                            <div class="p-2 rounded bg-white border small text-dark">
+                              <div class="d-flex justify-content-between align-items-center mb-1">
+                                <span class="badge bg-primary-subtle text-primary fw-bold">
+                                  {{ source.chunk.sourceType }}
+                                </span>
+                                <span class="badge bg-success-subtle text-success fw-bold">
+                                  Match Score: {{ source.relevanceScore }}%
+                                </span>
+                              </div>
+                              <strong class="d-block">{{ source.chunk.title }}</strong>
+                              <span class="text-muted source-terms">
+                                Key matched terms: {{ source.matchedTerms.join(', ') || 'semantic match' }}
+                              </span>
+                            </div>
+                          }
+                        </div>
+                      </div>
+                    }
+
+                    <!-- Initial Prompt Suggestions -->
+                    @if (msg.suggestedPrompts && msg.suggestedPrompts.length > 0) {
+                      <div class="mt-3 pt-2 border-top">
+                        <small class="fw-bold d-block text-muted mb-2">Try asking one of these:</small>
+                        <div class="d-flex flex-wrap gap-2">
+                          @for (prompt of msg.suggestedPrompts; track prompt) {
+                            <button
+                              type="button"
+                              class="btn btn-outline-secondary btn-sm rounded-pill text-start prompt-button"
+                              (click)="sendPresetQuery(prompt)">
+                              💡 {{ prompt }}
+                            </button>
+                          }
+                        </div>
+                      </div>
+                    }
+                  </div>
+                </div>
+                <small class="text-muted mt-1 px-4 message-timestamp">{{ msg.timestamp }}</small>
+              </div>
+            }
+
+            @if (ragService.isGenerating()) {
+              <div class="d-flex gap-2 generating-row">
+                <div class="fs-4">✈️</div>
+                <div class="p-3 rounded-4 bg-light border text-muted small d-flex align-items-center gap-2">
+                  <div class="spinner-border spinner-border-sm text-primary" role="status"></div>
+                  <span>Searching verified destination dossiers & generating grounded answer...</span>
+                </div>
+              </div>
+            }
+          </div>
+
+          <!-- Input Bar -->
+          <div class="p-3 border-top bg-white rounded-bottom-4">
+            <form (ngSubmit)="onSendQuery()" class="d-flex gap-2">
+              <input
+                type="text"
+                class="form-control py-2"
+                [(ngModel)]="userInput"
+                name="userInput"
+                placeholder="Ask about destinations, budget formulas, best seasons, or itineraries..."
+                [disabled]="ragService.isGenerating()" />
+              <button
+                type="submit"
+                class="btn btn-roamly-primary px-4"
+                [disabled]="!userInput.trim() || ragService.isGenerating()">
+                Send ➔
+              </button>
+            </form>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Right Column: Grounding Knowledge Base Inspector -->
+      <div class="col-lg-4">
+        <div class="bg-white rounded-4 border shadow-sm p-4 h-100 d-flex flex-column">
+          <div class="d-flex align-items-center justify-content-between mb-3">
+            <h5 class="fw-bold text-dark fs-6 mb-0">RAG Grounding Corpus</h5>
+            <span class="badge bg-secondary">{{ ragService.getKnowledgeSources().length }} Documents</span>
+          </div>
+
+          <p class="text-muted small mb-3">
+            The AI cannot hallucinate outside of this verified index of 12 destinations and official calculation policies:
+          </p>
+
+          <div class="flex-grow-1 overflow-auto pe-1 d-flex flex-column gap-2 corpus-list">
+            @for (doc of ragService.getKnowledgeSources(); track doc.id) {
+              <div class="p-3 rounded border bg-light small">
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                  <span class="badge" [ngClass]="doc.sourceType === 'Destination Dossier' ? 'bg-info text-dark' : 'bg-warning text-dark'">
+                    {{ doc.sourceType }}
+                  </span>
+                  @if (doc.metadata?.dailyCost) {
+                    <strong class="text-primary">${{ doc.metadata?.dailyCost }}/day</strong>
+                  }
+                </div>
+                <strong class="d-block text-dark mb-1">{{ doc.title }}</strong>
+                <p class="text-muted mb-2 document-preview">
+                  {{ doc.content.substring(0, 110) }}...
+                </p>
+                <div class="d-flex flex-wrap gap-1">
+                  @for (tag of doc.tags.slice(0, 4); track tag) {
+                    <span class="badge bg-white text-secondary border document-tag">#{{ tag }}</span>
+                  }
+                </div>
+              </div>
+            }
+          </div>
+
+          <div class="pt-3 mt-3 border-top text-center">
+            <a routerLink="/planner" class="btn btn-roamly-outline btn-sm w-100">
+              Open Interactive Trip Planner 🎒
+            </a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</main>

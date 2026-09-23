@@ -1,0 +1,314 @@
+<!-- 1. Page Banner -->
+<section class="planner-hero">
+  <div class="container">
+    <span class="section-badge planner-hero-badge">Smart Itinerary Builder</span>
+    <h1 class="section-title text-white mb-2">Interactive Trip Planner</h1>
+    <p class="section-subtitle planner-hero-subtitle mx-auto">
+      Customize your destination, dates, travelers, and interests. Watch your budget update live and save your tailored itinerary.
+    </p>
+  </div>
+</section>
+
+<!-- 2. Main Planner Form & Live Calculator -->
+<main class="section">
+  <div class="container">
+    <div class="planner-layout">
+
+      <!-- Left: Planner Input Form -->
+      <div class="planner-card">
+        <form (ngSubmit)="saveTrip()">
+
+          <!-- Section 1: Trip Essentials -->
+          <div class="form-section-heading">
+            <span>📍</span> 1. Destination & Trip Title
+          </div>
+
+          <div class="form-group mb-3">
+            <label for="trip-custom-title">Trip Title / Nickname</label>
+            <input
+              type="text"
+              id="trip-custom-title"
+              class="form-control"
+              [(ngModel)]="tripTitle"
+              name="tripTitle"
+              placeholder="e.g. Summer Vacation, Romantic Honeymoon..." />
+            <span class="form-hint">Give your vacation plan a memorable name</span>
+          </div>
+
+          <div class="form-group mb-4">
+            <label for="trip-destination">Select Destination <span class="text-danger">*</span></label>
+            <select
+              id="trip-destination"
+              class="form-control"
+              [ngModel]="selectedDestId()"
+              (ngModelChange)="onDestinationChange($event)"
+              name="destination"
+              required>
+              @for (dest of destService.destinations(); track dest.id) {
+                <option [value]="dest.id">
+                  {{ dest.name }}, {{ dest.country }} ({{ dest.budgetLevel }} • ${{ dest.dailyCost }}/day)
+                </option>
+              }
+            </select>
+          </div>
+
+          <!-- Section 2: Dates & Duration -->
+          <div class="form-section-heading mt-4">
+            <span>📅</span> 2. Travel Dates
+          </div>
+
+          <div class="row g-3 mb-4">
+            <div class="col-sm-6">
+              <label for="trip-start-date" class="form-label fw-semibold">Departure Date <span class="text-danger">*</span></label>
+              <input
+                type="date"
+                id="trip-start-date"
+                class="form-control"
+                [(ngModel)]="startDate"
+                (ngModelChange)="onDateChange()"
+                name="startDate"
+                [min]="todayDate"
+                required />
+            </div>
+            <div class="col-sm-6">
+              <label for="trip-end-date" class="form-label fw-semibold">Return Date <span class="text-danger">*</span></label>
+              <input
+                type="date"
+                id="trip-end-date"
+                class="form-control"
+                [(ngModel)]="endDate"
+                (ngModelChange)="onDateChange()"
+                name="endDate"
+                [min]="startDate"
+                required />
+            </div>
+          </div>
+
+          <!-- Section 3: Travelers -->
+          <div class="form-section-heading mt-4">
+            <span>👥</span> 3. Travelers
+          </div>
+
+          <div class="row g-3 mb-4">
+            <div class="col-sm-6">
+              <label class="form-label fw-semibold">Adults (18+)</label>
+              <div class="counter-control">
+                <button type="button" class="counter-btn" (click)="adjustAdults(-1)" aria-label="Decrease adults">−</button>
+                <span class="counter-value">{{ adults() }}</span>
+                <button type="button" class="counter-btn" (click)="adjustAdults(1)" aria-label="Increase adults">+</button>
+              </div>
+            </div>
+
+            <div class="col-sm-6">
+              <label class="form-label fw-semibold">Children (0 - 17)</label>
+              <div class="counter-control">
+                <button type="button" class="counter-btn" (click)="adjustChildren(-1)" aria-label="Decrease children">−</button>
+                <span class="counter-value">{{ children() }}</span>
+                <button type="button" class="counter-btn" (click)="adjustChildren(1)" aria-label="Increase children">+</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Section 4: Travel Style / Budget Tier -->
+          <div class="form-section-heading mt-4">
+            <span>💳</span> 4. Travel Style & Budget Tier
+          </div>
+
+          <div class="radio-cards-grid mb-4">
+            <label class="radio-card-label" [class.selected]="selectedStyle() === 'budget'">
+              <input type="radio" name="travelStyle" value="budget" [checked]="selectedStyle() === 'budget'" (change)="setStyle('budget')" />
+              <span class="radio-card-title">🎒 Backpacker</span>
+              <span class="radio-card-sub">Hostels & local eats (0.7x)</span>
+            </label>
+
+            <label class="radio-card-label" [class.selected]="selectedStyle() === 'standard'">
+              <input type="radio" name="travelStyle" value="standard" [checked]="selectedStyle() === 'standard'" (change)="setStyle('standard')" />
+              <span class="radio-card-title">✨ Standard</span>
+              <span class="radio-card-sub">3-4★ hotels & tours (1.0x)</span>
+            </label>
+
+            <label class="radio-card-label" [class.selected]="selectedStyle() === 'luxury'">
+              <input type="radio" name="travelStyle" value="luxury" [checked]="selectedStyle() === 'luxury'" (change)="setStyle('luxury')" />
+              <span class="radio-card-title">👑 Luxury</span>
+              <span class="radio-card-sub">5★ resorts & private (1.85x)</span>
+            </label>
+          </div>
+
+          <!-- Section 5: Activities -->
+          <div class="form-section-heading mt-4">
+            <span>🎯</span> 5. Activities & Interests
+          </div>
+
+          <div class="checkbox-chips-grid mb-4">
+            <label class="chip-label" [class.checked]="hasActivity('sightseeing')">
+              <input type="checkbox" [checked]="hasActivity('sightseeing')" (change)="toggleActivity('sightseeing')" />
+              <span>🏛️ Sightseeing & Museums</span>
+            </label>
+            <label class="chip-label" [class.checked]="hasActivity('dining')">
+              <input type="checkbox" [checked]="hasActivity('dining')" (change)="toggleActivity('dining')" />
+              <span>🍷 Food & Culinary Tours</span>
+            </label>
+            <label class="chip-label" [class.checked]="hasActivity('nature')">
+              <input type="checkbox" [checked]="hasActivity('nature')" (change)="toggleActivity('nature')" />
+              <span>🌲 Nature & Hiking</span>
+            </label>
+            <label class="chip-label" [class.checked]="hasActivity('wellness')">
+              <input type="checkbox" [checked]="hasActivity('wellness')" (change)="toggleActivity('wellness')" />
+              <span>🧖 Relaxation & Spas</span>
+            </label>
+            <label class="chip-label" [class.checked]="hasActivity('nightlife')">
+              <input type="checkbox" [checked]="hasActivity('nightlife')" (change)="toggleActivity('nightlife')" />
+              <span>🎶 Nightlife & Music</span>
+            </label>
+          </div>
+
+          <!-- Actions -->
+          <div class="d-flex gap-3 flex-wrap pt-3 border-top">
+            <button type="submit" class="btn btn-roamly-primary btn-lg flex-fill">
+              Save Trip to My Plans 💾
+            </button>
+            <button type="button" class="btn btn-roamly-outline btn-lg" (click)="resetForm()">
+              Reset Form ↺
+            </button>
+          </div>
+
+        </form>
+      </div>
+
+      <!-- Right: Real-Time Summary & Dynamic Itinerary Preview -->
+      <div class="summary-sticky">
+
+        <!-- Cost Summary Card -->
+        <div class="summary-card">
+          <h3 class="summary-title">Trip Estimate & Summary</h3>
+
+          @if (currentDestination(); as dest) {
+            <div class="summary-destination-badge">
+              <img class="summary-dest-img" [src]="dest.image" [alt]="dest.name" />
+              <div class="summary-dest-info">
+                <h4 class="mb-0">{{ dest.name }}, {{ dest.country }}</h4>
+                <p class="mb-0">{{ dest.region }} • {{ dest.category }}</p>
+              </div>
+            </div>
+          }
+
+          <div class="summary-line-item">
+            <span>Duration</span>
+            <strong>{{ durationDays() }} Day{{ durationDays() > 1 ? 's' : '' }}</strong>
+          </div>
+          <div class="summary-line-item">
+            <span>Travelers</span>
+            <strong>{{ totalTravelers() }} Traveler{{ totalTravelers() > 1 ? 's' : '' }} ({{ adults() }} Ad, {{ children() }} Ch)</strong>
+          </div>
+          <div class="summary-line-item">
+            <span>Travel Style</span>
+            <strong class="text-capitalize">{{ selectedStyle() }}</strong>
+          </div>
+
+          <div class="summary-divider"></div>
+
+          <div class="summary-line-item">
+            <span>Estimated Lodging</span>
+            <span>${{ costBreakdown().lodgingCost | number }}</span>
+          </div>
+          <div class="summary-line-item">
+            <span>Meals & Local Transit</span>
+            <span>${{ costBreakdown().foodAndTransportCost | number }}</span>
+          </div>
+          <div class="summary-line-item">
+            <span>Activities & Tours</span>
+            <span>${{ costBreakdown().activitiesCost | number }}</span>
+          </div>
+
+          <div class="summary-divider"></div>
+
+          <div class="summary-total">
+            <div>
+              <span class="d-block">Total Estimated Cost</span>
+              <small class="text-muted">
+                Approx. ${{ costBreakdown().perPersonCost | number }} / person
+              </small>
+            </div>
+            <div class="total-amount">${{ costBreakdown().totalCost | number }}</div>
+          </div>
+
+          <button type="button" class="btn btn-roamly-outline w-100" (click)="printItinerary()">
+            Print / Export Itinerary 🖨️
+          </button>
+        </div>
+
+        <!-- Dynamic Itinerary Preview Card -->
+        <div class="summary-card">
+          <h3 class="summary-title mb-2">Generated Itinerary Preview</h3>
+          <p class="small text-muted mb-3">
+            Tailored for {{ durationDays() }} days with {{ selectedActivities().length }} chosen activities:
+          </p>
+          <div class="itinerary-output">
+            @for (dayItem of generatedItinerary(); track dayItem.day) {
+              <div class="itinerary-day-card">
+                <div class="itinerary-day-header">{{ dayItem.theme }}</div>
+                <div class="itinerary-day-content">{{ dayItem.activities }}</div>
+              </div>
+            }
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- 3. Saved Trips Section (Persistence) -->
+    <section class="saved-trips-section mt-5 pt-4 border-top" id="saved-trips">
+      <div class="section-header text-start mb-4">
+        <span class="section-badge">My Plans</span>
+        <h2 class="section-title">Saved Trips ({{ tripService.savedTripsCount() }})</h2>
+        <p class="section-subtitle">Manage, print, and reload itineraries saved on your account.</p>
+      </div>
+
+      @if (tripService.savedTrips().length > 0) {
+        <div class="saved-trips-grid">
+          @for (trip of tripService.savedTrips(); track trip.id) {
+            <div class="saved-trip-card">
+              <div class="saved-trip-header">
+                <div>
+                  <h4 class="mb-1">{{ trip.title }}</h4>
+                  <span class="card-location">📍 {{ trip.destinationName }}, {{ trip.country }}</span>
+                </div>
+                <button
+                  type="button"
+                  class="btn btn-outline-danger btn-sm p-1 px-2"
+                  (click)="deleteTrip(trip.id)"
+                  title="Delete Trip">
+                  🗑️
+                </button>
+              </div>
+
+              <div class="saved-trip-meta">
+                <span>📅 {{ trip.startDate }} to {{ trip.endDate }} ({{ trip.durationDays }} Days)</span>
+                <span>👥 {{ trip.totalTravelers }} Travelers • <strong class="text-capitalize">{{ trip.style }}</strong> Style</span>
+                <span>💰 Estimated Budget: <strong>{{ trip.totalCost }}</strong></span>
+              </div>
+
+              <div class="saved-trip-footer">
+                <small class="text-muted">Saved on {{ trip.createdAt }}</small>
+                <button
+                  type="button"
+                  class="btn btn-roamly-outline btn-sm"
+                  (click)="loadTripIntoPlanner(trip.destinationId)">
+                  Reload Destination
+                </button>
+              </div>
+            </div>
+          }
+        </div>
+      } @else {
+        <div class="text-center p-5 bg-white rounded-4 border border-dashed">
+          <div class="fs-1 mb-2">🎒</div>
+          <h3 class="fw-bold text-dark">No saved trips yet</h3>
+          <p class="text-muted mb-0">Use the form above to configure your vacation and click "Save Trip to My Plans".</p>
+        </div>
+      }
+    </section>
+
+  </div>
+</main>

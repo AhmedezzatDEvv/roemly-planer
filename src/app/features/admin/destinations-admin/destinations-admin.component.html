@@ -1,0 +1,256 @@
+<div class="container-fluid px-0">
+  <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3 mb-4">
+    <div>
+      <h1 class="fs-3 fw-bold text-dark mb-1">Destinations Management (CRUD)</h1>
+      <p class="text-muted small mb-0">Create, update, or remove curated global destinations from the catalog.</p>
+    </div>
+    <button type="button" class="btn btn-roamly-primary" (click)="openAddModal()">
+      + Add New Destination
+    </button>
+  </div>
+
+  <!-- Filters & Search Toolbar -->
+  <div class="bg-white p-3 rounded-3 border shadow-sm mb-4">
+    <div class="row g-2 align-items-center">
+      <div class="col-md-5">
+        <div class="input-group">
+          <span class="input-group-text bg-light">🔍</span>
+          <input
+            type="text"
+            class="form-control"
+            [(ngModel)]="searchQuery"
+            placeholder="Search by name, country, or keyword..." />
+        </div>
+      </div>
+
+      <div class="col-sm-6 col-md-3">
+        <select class="form-select" [(ngModel)]="selectedRegion">
+          <option value="all">All Regions</option>
+          <option value="Europe">Europe</option>
+          <option value="Asia">Asia</option>
+          <option value="Americas">Americas</option>
+          <option value="Africa">Africa</option>
+          <option value="Oceania">Oceania</option>
+        </select>
+      </div>
+
+      <div class="col-sm-6 col-md-3">
+        <select class="form-select" [(ngModel)]="selectedCategory">
+          <option value="all">All Styles</option>
+          <option value="Cultural">Cultural</option>
+          <option value="Coastal">Coastal</option>
+          <option value="Nature">Nature</option>
+          <option value="Adventure">Adventure</option>
+          <option value="Luxury">Luxury</option>
+        </select>
+      </div>
+
+      <div class="col-12 col-md-1 text-md-end">
+        <button type="button" class="btn btn-outline-secondary w-100" (click)="resetFilters()" title="Reset">
+          ↺
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Destinations Data Table -->
+  <div class="bg-white rounded-3 border shadow-sm overflow-hidden">
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="table-light text-muted small">
+          <tr>
+            <th class="photo-column">Photo</th>
+            <th>Destination</th>
+            <th>Region & Style</th>
+            <th>Daily Cost</th>
+            <th>Rating</th>
+            <th>Best Season</th>
+            <th class="actions-column text-end">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (dest of filteredDestinations(); track dest.id) {
+            <tr>
+              <td>
+                <img [src]="dest.image" [alt]="dest.name" class="rounded object-fit-cover destination-thumbnail" />
+              </td>
+              <td>
+                <strong class="d-block text-dark">{{ dest.name }}</strong>
+                <small class="text-muted">📍 {{ dest.country }}</small>
+              </td>
+              <td>
+                <span class="badge bg-primary-subtle text-primary fw-semibold me-1">{{ dest.region }}</span>
+                <span class="badge bg-light text-dark border">{{ dest.category }}</span>
+              </td>
+              <td>
+                <span class="fw-bold text-dark">${{ dest.dailyCost }}</span>
+                <small class="text-muted d-block">({{ dest.budgetLevel }})</small>
+              </td>
+              <td>
+                <span class="text-warning">★</span> {{ dest.rating }}
+                <small class="text-muted d-block">({{ dest.reviewsCount }} reviews)</small>
+              </td>
+              <td class="small text-muted best-season">
+                {{ dest.bestSeason }}
+              </td>
+              <td class="text-end">
+                <button
+                  type="button"
+                  class="btn btn-outline-primary btn-sm me-1 p-1 px-2"
+                  (click)="openEditModal(dest)"
+                  title="Edit Destination">
+                  ✏️
+                </button>
+                <button
+                  type="button"
+                  class="btn btn-outline-danger btn-sm p-1 px-2"
+                  (click)="deleteDestination(dest.id, dest.name)"
+                  title="Delete Destination">
+                  🗑️
+                </button>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="7" class="text-center py-5 text-muted">
+                No destinations found matching your filters.
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <div class="p-3 border-top bg-light d-flex justify-content-between align-items-center small text-muted">
+      <span>Total destinations in catalog: <strong>{{ destService.destinations().length }}</strong></span>
+      <span>Showing: <strong>{{ filteredDestinations().length }}</strong></span>
+    </div>
+  </div>
+</div>
+
+<!-- Add / Edit Destination Modal Dialog -->
+ <!-- لو اليوزر خرج -->
+@if (modalOpen()) {
+  <div class="modal-overlay" (click)="onOverlayClick($event)">
+    <div class="modal-box p-4 destination-modal">
+      <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
+        <h3 class="fs-5 fw-bold text-dark mb-0">
+          {{ editingId() ? 'Edit Destination' : 'Add New Destination' }}
+        </h3>
+        <button type="button" class="btn-close" (click)="closeModal()" aria-label="Close"></button>
+      </div>
+
+      <form [formGroup]="destForm" (ngSubmit)="onFormSubmit()">
+        <div class="row g-3">
+          <!-- Name -->
+          <div class="col-md-6">
+            <label class="form-label small fw-semibold">Destination Name <span class="text-danger">*</span></label>
+            <input type="text" class="form-control" formControlName="name" placeholder="e.g. Kyoto" />
+          </div>
+
+          <!-- Country -->
+          <div class="col-md-6">
+            <label class="form-label small fw-semibold">Country <span class="text-danger">*</span></label>
+            <input type="text" class="form-control" formControlName="country" placeholder="e.g. Japan" />
+          </div>
+
+          <!-- Region -->
+          <div class="col-md-4">
+            <label class="form-label small fw-semibold">Region <span class="text-danger">*</span></label>
+            <select class="form-select" formControlName="region">
+              <option value="Europe">Europe</option>
+              <option value="Asia">Asia</option>
+              <option value="Americas">Americas</option>
+              <option value="Africa">Africa</option>
+              <option value="Oceania">Oceania</option>
+            </select>
+          </div>
+
+          <!-- Category -->
+          <div class="col-md-4">
+            <label class="form-label small fw-semibold">Style / Category <span class="text-danger">*</span></label>
+            <select class="form-select" formControlName="category">
+              <option value="Cultural">Cultural</option>
+              <option value="Coastal">Coastal</option>
+              <option value="Nature">Nature</option>
+              <option value="Adventure">Adventure</option>
+              <option value="Luxury">Luxury</option>
+            </select>
+          </div>
+
+          <!-- Budget Level -->
+          <div class="col-md-4">
+            <label class="form-label small fw-semibold">Budget Tier <span class="text-danger">*</span></label>
+            <select class="form-select" formControlName="budgetLevel">
+              <option value="$">$ Budget (&lt;$100)</option>
+              <option value="$$">$$ Moderate ($100-$170)</option>
+              <option value="$$$">$$$ Premium ($170-$250)</option>
+              <option value="$$$$">$$$$ Luxury ($250+)</option>
+            </select>
+          </div>
+
+          <!-- Daily Cost -->
+          <div class="col-md-4">
+            <label class="form-label small fw-semibold">Daily Cost ($) <span class="text-danger">*</span></label>
+            <input type="number" class="form-control" formControlName="dailyCost" min="20" />
+          </div>
+
+          <!-- Rating -->
+          <div class="col-md-4">
+            <label class="form-label small fw-semibold">Rating (1 - 5) <span class="text-danger">*</span></label>
+            <input type="number" class="form-control" formControlName="rating" step="0.1" min="1" max="5" />
+          </div>
+
+          <!-- Reviews Count -->
+          <div class="col-md-4">
+            <label class="form-label small fw-semibold">Reviews Count</label>
+            <input type="number" class="form-control" formControlName="reviewsCount" min="0" />
+          </div>
+
+          <!-- Recommended Duration -->
+          <div class="col-md-6">
+            <label class="form-label small fw-semibold">Recommended Duration</label>
+            <input type="text" class="form-control" formControlName="duration" placeholder="e.g. 5 - 7 Days" />
+          </div>
+
+          <!-- Image URL -->
+          <div class="col-md-6">
+            <label class="form-label small fw-semibold">Cover Image URL <span class="text-danger">*</span></label>
+            <input type="url" class="form-control" formControlName="image" placeholder="https://images.unsplash.com/..." />
+          </div>
+
+          <!-- Description -->
+          <div class="col-12">
+            <label class="form-label small fw-semibold">Description <span class="text-danger">*</span></label>
+            <textarea class="form-control" rows="3" formControlName="description" placeholder="Compelling destination overview..."></textarea>
+          </div>
+
+          <!-- Highlights (Comma separated) -->
+          <div class="col-12">
+            <label class="form-label small fw-semibold">Highlights (Separated by semicolon ;)</label>
+            <input type="text" class="form-control" formControlName="highlights" placeholder="Temple walking tour; Scenic boat cruise; Mountain gondola view" />
+          </div>
+
+          <!-- Best Season -->
+          <div class="col-md-6">
+            <label class="form-label small fw-semibold">Best Season</label>
+            <input type="text" class="form-control" formControlName="bestSeason" placeholder="e.g. March - May & Oct - Nov" />
+          </div>
+
+          <!-- Climate -->
+          <div class="col-md-6">
+            <label class="form-label small fw-semibold">Climate</label>
+            <input type="text" class="form-control" formControlName="climate" placeholder="e.g. Mediterranean with warm sunny days" />
+          </div>
+        </div>
+
+        <div class="d-flex justify-content-end gap-2 mt-4 pt-3 border-top">
+          <button type="button" class="btn btn-outline-secondary" (click)="closeModal()">Cancel</button>
+          <button type="submit" class="btn btn-roamly-primary">
+            {{ editingId() ? 'Save Changes' : 'Create Destination' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+}

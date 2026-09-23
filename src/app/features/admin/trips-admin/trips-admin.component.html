@@ -1,0 +1,111 @@
+<div class="container-fluid px-0">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h1 class="fs-3 fw-bold text-dark mb-1">Planned Trips & Bookings</h1>
+      <p class="text-muted small mb-0">Oversee customer vacation blueprints, status pipelines, and budget estimates.</p>
+    </div>
+  </div>
+
+  <!-- Filters & Search Toolbar -->
+  <div class="bg-white p-3 rounded-3 border shadow-sm mb-4">
+    <div class="row g-2 align-items-center">
+      <div class="col-md-6">
+        <div class="input-group">
+          <span class="input-group-text bg-light">🔍</span>
+          <input
+            type="text"
+            class="form-control"
+            [(ngModel)]="searchQuery"
+            placeholder="Search by trip title, destination, or country..." />
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <select class="form-select" [(ngModel)]="statusFilter">
+          <option value="all">All Statuses</option>
+          <option value="Planned">Planned</option>
+          <option value="Confirmed">Confirmed</option>
+          <option value="Completed">Completed</option>
+          <option value="Cancelled">Cancelled</option>
+        </select>
+      </div>
+
+      <div class="col-md-2 text-end">
+        <button type="button" class="btn btn-outline-secondary w-100" (click)="resetFilters()">
+          Reset Filters ↺
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Trips Table -->
+  <div class="bg-white rounded-3 border shadow-sm overflow-hidden">
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="table-light text-muted small">
+          <tr>
+            <th>Trip Name & Destination</th>
+            <th>Travel Dates</th>
+            <th>Party & Style</th>
+            <th>Cost Estimate</th>
+            <th>Status</th>
+            <th class="text-end">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (trip of filteredTrips(); track trip.id) {
+            <tr>
+              <td>
+                <strong class="d-block text-dark">{{ trip.title }}</strong>
+                <small class="text-muted">📍 {{ trip.destinationName }}, {{ trip.country }}</small>
+              </td>
+              <td>
+                <span class="d-block">{{ trip.startDate }} to {{ trip.endDate }}</span>
+                <small class="text-muted">({{ trip.durationDays }} Days)</small>
+              </td>
+              <td>
+                <span class="d-block">{{ trip.totalTravelers }} Travelers</span>
+                <span class="badge bg-light text-dark border text-capitalize">{{ trip.style }}</span>
+              </td>
+              <td>
+                <strong class="text-primary">{{ trip.totalCost }}</strong>
+                <small class="text-muted d-block">{{ trip.perPersonCost }} / person</small>
+              </td>
+              <td>
+                <select
+                  class="form-select form-select-sm d-inline-block w-auto"
+                  [ngModel]="trip.status"
+                  (ngModelChange)="onStatusChange(trip.id, $event)">
+                  <option value="Planned">Planned</option>
+                  <option value="Confirmed">Confirmed</option>
+                  <option value="Completed">Completed</option>
+                  <option value="Cancelled">Cancelled</option>
+                </select>
+              </td>
+              <td class="text-end">
+                <button
+                  type="button"
+                  class="btn btn-outline-danger btn-sm p-1 px-2"
+                  (click)="deleteTrip(trip.id, trip.title)"
+                  title="Delete Trip">
+                  🗑️
+                </button>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="6" class="text-center py-5 text-muted">
+                No trips found matching criteria.
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <div class="p-3 border-top bg-light d-flex justify-content-between align-items-center small text-muted">
+      <span>Total planned trips: <strong>{{ tripService.savedTrips().length }}</strong></span>
+      <span>Showing: <strong>{{ filteredTrips().length }}</strong></span>
+    </div>
+  </div>
+</div>

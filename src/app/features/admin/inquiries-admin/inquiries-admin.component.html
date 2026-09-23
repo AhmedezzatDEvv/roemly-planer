@@ -1,0 +1,108 @@
+<div class="container-fluid px-0">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h1 class="fs-3 fw-bold text-dark mb-1">Inquiries & Support Messages</h1>
+      <p class="text-muted small mb-0">Review traveler support inquiries and track ticket resolution states.</p>
+    </div>
+  </div>
+
+  <!-- Inquiries Table -->
+  <div class="bg-white rounded-3 border shadow-sm overflow-hidden mb-4">
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="table-light text-muted small">
+          <tr>
+            <th>Traveler</th>
+            <th>Subject Topic</th>
+            <th>Received Date</th>
+            <th>Status</th>
+            <th class="text-end">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (inq of contactService.inquiries(); track inq.id) {
+            <tr>
+              <td>
+                <strong class="d-block text-dark">{{ inq.name }}</strong>
+                <small class="text-muted">{{ inq.email }}</small>
+              </td>
+              <td>
+                <span class="fw-semibold text-dark">{{ inq.subject }}</span>
+                <p class="small text-muted mb-0 text-truncate inquiry-preview">
+                  {{ inq.message }}
+                </p>
+              </td>
+              <td class="small text-muted">{{ inq.createdAt }}</td>
+              <td>
+                <select
+                  class="form-select form-select-sm d-inline-block w-auto"
+                  [ngModel]="inq.status"
+                  (ngModelChange)="onStatusChange(inq.id, $event)">
+                  <option value="New">New</option>
+                  <option value="In Review">In Review</option>
+                  <option value="Resolved">Resolved</option>
+                </select>
+              </td>
+              <td class="text-end">
+                <button
+                  type="button"
+                  class="btn btn-outline-primary btn-sm me-1 p-1 px-2"
+                  (click)="viewInquiry(inq)"
+                  title="View Message">
+                  👁️
+                </button>
+                <button
+                  type="button"
+                  class="btn btn-outline-danger btn-sm p-1 px-2"
+                  (click)="deleteInquiry(inq.id)"
+                  title="Delete">
+                  🗑️
+                </button>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="5" class="text-center py-5 text-muted">
+                No inquiries received yet.
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Inquiry Details Modal Dialog -->
+@if (selectedInquiry(); as inq) {
+  <div class="modal-overlay" (click)="onOverlayClick($event)">
+    <div class="modal-box p-4 inquiry-modal">
+      <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
+        <h3 class="fs-5 fw-bold text-dark mb-0">Customer Inquiry</h3>
+        <button type="button" class="btn-close" (click)="selectedInquiry.set(null)"></button>
+      </div>
+
+      <div class="mb-3">
+        <small class="text-muted d-block">From:</small>
+        <strong class="fs-6">{{ inq.name }} ({{ inq.email }})</strong>
+      </div>
+
+      <div class="mb-3">
+        <small class="text-muted d-block">Topic:</small>
+        <span class="badge bg-primary-subtle text-primary">{{ inq.subject }}</span>
+      </div>
+
+      <div class="mb-4">
+        <small class="text-muted d-block mb-1">Message Content:</small>
+        <div class="p-3 bg-light rounded border text-dark small inquiry-message">
+          {{ inq.message }}
+        </div>
+      </div>
+
+      <div class="d-flex justify-content-between align-items-center pt-3 border-top">
+        <small class="text-muted">Received: {{ inq.createdAt }}</small>
+        <button type="button" class="btn btn-secondary btn-sm" (click)="selectedInquiry.set(null)">Close</button>
+      </div>
+    </div>
+  </div>
+}

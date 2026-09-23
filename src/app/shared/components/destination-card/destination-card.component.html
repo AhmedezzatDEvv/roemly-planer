@@ -1,0 +1,53 @@
+<article class="destination-card h-100">
+  <div class="card-img-wrapper">
+    <img [src]="destination.image" [alt]="destination.name + ', ' + destination.country" loading="lazy" />
+    <span class="card-badge">{{ destination.region }}</span>
+    <button
+      type="button"
+      class="card-fav-btn"
+      [class.active]="isFav()"
+      (click)="toggleFav($event)"
+      [attr.aria-label]="'Favorite ' + destination.name">
+      {{ isFav() ? '❤️' : '🤍' }}
+    </button>
+  </div>
+
+  <div class="card-body">
+    <div class="card-meta">
+      <span class="card-location">📍 {{ destination.country }}</span>
+      <span class="card-rating">
+        <span class="star">★</span> {{ destination.rating }} <small>({{ destination.reviewsCount }})</small>
+      </span>
+    </div>
+
+    <h3 class="card-title">{{ destination.name }}</h3>
+    <p class="card-desc">{{ destination.description }}</p>
+
+    <div class="card-tags">
+      <span class="tag-pill">{{ destination.category }}</span>
+      <span class="tag-pill">{{ destination.duration }}</span>
+      <span class="tag-pill">Budget: {{ destination.budgetLevel }}</span>
+    </div>
+
+    <div class="card-footer">
+      <div class="card-price">
+        <span class="price-label">Estimated</span>
+        <span class="price-val">
+          ${{ destination.dailyCost }} <small>/ day</small>
+        </span>
+      </div>
+
+      <div class="card-actions">
+        <button
+          type="button"
+          class="btn btn-roamly-outline btn-sm"
+          (click)="openQuickView()">
+          Quick View
+        </button>
+        <a [routerLink]="['/planner']" [queryParams]="{dest: destination.id}" class="btn btn-roamly-primary btn-sm">
+          Plan Trip
+        </a>
+      </div>
+    </div>
+  </div>
+</article>

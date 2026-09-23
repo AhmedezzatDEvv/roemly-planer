@@ -1,0 +1,92 @@
+<div class="admin-shell d-flex flex-column min-vh-100 bg-light">
+  <!-- Admin Top Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark px-3 py-2 border-bottom border-secondary sticky-top" style="z-index: 1030;">
+    <div class="container-fluid">
+      <a routerLink="/admin/dashboard" class="navbar-brand d-flex align-items-center gap-2 fw-bold">
+        <span class="fs-4">✈️</span>
+        <span>Roamly <span class="badge bg-primary fs-7">ADMIN</span></span>
+      </a>
+
+      <div class="d-flex align-items-center gap-3">
+        <a routerLink="/" class="btn btn-outline-light btn-sm d-flex align-items-center gap-1">
+          <span>👁️</span> <span class="d-none d-sm-inline">View Public Site</span>
+        </a>
+
+        <div class="text-light small d-none d-md-block border-start ps-3 border-secondary">
+          Logged in: <strong>{{ authService.currentUser()?.name }}</strong>
+        </div>
+
+        <button type="button" class="btn btn-danger btn-sm" (click)="logout()">
+          Sign Out
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="d-flex flex-grow-1">
+    <!-- Sidebar Navigation -->
+    <aside class="admin-sidebar bg-white border-end p-3 d-none d-lg-block" style="width: 260px; min-height: calc(100vh - 56px);">
+      <div class="text-uppercase small fw-bold text-muted mb-2 px-3">Management</div>
+      <ul class="nav nav-pills flex-column gap-1">
+        <li class="nav-item">
+          <a routerLink="/admin/dashboard" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="nav-link text-dark d-flex align-items-center gap-2">
+            <span>📊</span> <span>Dashboard</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a routerLink="/admin/destinations" routerLinkActive="active" class="nav-link text-dark d-flex align-items-center gap-2">
+            <span>🌍</span> <span>Destinations (CRUD)</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a routerLink="/admin/trips" routerLinkActive="active" class="nav-link text-dark d-flex align-items-center gap-2">
+            <span>🎒</span> <span>Planned Trips</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a routerLink="/admin/inquiries" routerLinkActive="active" class="nav-link text-dark d-flex align-items-center gap-2">
+            <span>✉️</span> <span>Inquiries & FAQs</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a routerLink="/admin/users" routerLinkActive="active" class="nav-link text-dark d-flex align-items-center gap-2">
+            <span>👥</span> <span>Users & Roles</span>
+          </a>
+        </li>
+      </ul>
+
+      <div class="text-uppercase small fw-bold text-muted mt-4 mb-2 px-3">Public Features</div>
+      <ul class="nav nav-pills flex-column gap-1">
+        <li class="nav-item">
+          <a routerLink="/destinations" class="nav-link text-muted d-flex align-items-center gap-2">
+            <span>🔍</span> <span>Destinations Catalog</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a routerLink="/planner" class="nav-link text-muted d-flex align-items-center gap-2">
+            <span>🧮</span> <span>Trip Cost Estimator</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a routerLink="/ai-advisor" class="nav-link text-muted d-flex align-items-center gap-2">
+            <span>🤖</span> <span>RAG AI Advisor</span>
+          </a>
+        </li>
+      </ul>
+    </aside>
+
+    <!-- Main Content View Area -->
+    <main class="flex-grow-1 p-3 p-md-4 overflow-auto">
+      <!-- Mobile Admin Nav Pills -->
+      <div class="d-lg-none bg-white p-2 rounded-3 border mb-3 d-flex gap-2 overflow-auto">
+        <a routerLink="/admin/dashboard" routerLinkActive="active" class="btn btn-sm btn-outline-primary text-nowrap">📊 Dashboard</a>
+        <a routerLink="/admin/destinations" routerLinkActive="active" class="btn btn-sm btn-outline-primary text-nowrap">🌍 Destinations</a>
+        <a routerLink="/admin/trips" routerLinkActive="active" class="btn btn-sm btn-outline-primary text-nowrap">🎒 Trips</a>
+        <a routerLink="/admin/inquiries" routerLinkActive="active" class="btn btn-sm btn-outline-primary text-nowrap">✉️ Inquiries</a>
+        <a routerLink="/admin/users" routerLinkActive="active" class="btn btn-sm btn-outline-primary text-nowrap">👥 Users</a>
+      </div>
+
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+</div>

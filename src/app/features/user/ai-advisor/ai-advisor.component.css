@@ -1,0 +1,63 @@
+.ai-hero {
+  background: linear-gradient(135deg, #0f172a, #0369a1);
+  color: #fff;
+  padding: 3.5rem 0 3rem;
+  text-align: center;
+}
+
+.ai-hero-badge {
+  background: rgba(255, 255, 255, 0.2);
+  color: #fff;
+}
+
+.ai-hero-subtitle {
+  color: rgba(255, 255, 255, 0.85);
+  max-width: 640px;
+}
+
+.chat-shell {
+  height: 650px;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+}
+
+.message-row {
+  max-width: 85%;
+}
+
+.message-text {
+  white-space: pre-line;
+  line-height: 1.6;
+}
+
+.source-terms {
+  font-size: 0.8rem;
+}
+
+.prompt-button {
+  font-size: 0.82rem;
+}
+
+.message-timestamp {
+  font-size: 0.75rem;
+}
+
+.generating-row {
+  max-width: 80%;
+}
+
+.corpus-list {
+  max-height: 520px;
+}
+
+.document-preview {
+  font-size: 0.8rem;
+  line-height: 1.4;
+}
+
+.document-tag {
+  font-size: 0.7rem;
+}

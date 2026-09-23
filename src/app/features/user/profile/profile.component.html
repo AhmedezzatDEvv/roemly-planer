@@ -1,0 +1,162 @@
+<!-- Header Banner -->
+<section class="profile-hero">
+  <div class="container">
+    <span class="section-badge profile-hero-badge">My Account</span>
+    <h1 class="section-title text-white mb-2">Traveler Profile & Saved Plans</h1>
+    <p class="section-subtitle profile-hero-subtitle mx-auto">
+      Manage your account details, access your saved itineraries, and review bookmarked destinations.
+    </p>
+  </div>
+</section>
+
+<main class="section">
+  <div class="container">
+    @if (authService.currentUser(); as user) {
+      <!-- User Summary Card -->
+      <div class="bg-white p-4 p-md-5 rounded-4 border shadow-sm mb-5">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-4">
+          <div class="d-flex align-items-center gap-3">
+            <div class="user-avatar rounded-circle bg-primary-subtle text-primary d-flex align-items-center justify-content-center fs-1 fw-bold">
+              {{ user.name.charAt(0) }}
+            </div>
+            <div>
+              <div class="d-flex align-items-center gap-2 mb-1">
+                <h2 class="fs-4 fw-bold text-dark mb-0">{{ user.name }}</h2>
+                <span class="badge" [ngClass]="user.role === 'admin' ? 'bg-primary' : 'bg-success'">
+                  {{ user.role === 'admin' ? 'Administrator' : 'Verified Traveler' }}
+                </span>
+              </div>
+              <p class="text-muted small mb-0">{{ user.email }} • Member since {{ user.createdAt }}</p>
+            </div>
+          </div>
+
+          <div class="d-flex gap-3">
+            @if (authService.isAdmin()) {
+              <a routerLink="/admin/dashboard" class="btn btn-roamly-secondary">
+                ⚙️ Admin Portal
+              </a>
+            }
+            <button type="button" class="btn btn-outline-danger" (click)="logout()">
+              Sign Out
+            </button>
+          </div>
+        </div>
+
+        <!-- Stats Bar -->
+        <div class="row g-3 mt-4 pt-4 border-top text-center">
+          <div class="col-sm-6 col-md-4">
+            <div class="p-3 bg-light rounded-3">
+              <div class="fs-3 fw-bold text-primary">{{ tripService.savedTripsCount() }}</div>
+              <small class="text-muted fw-semibold">Saved Trip Plans</small>
+            </div>
+          </div>
+
+          <div class="col-sm-6 col-md-4">
+            <div class="p-3 bg-light rounded-3">
+              <div class="fs-3 fw-bold text-danger">{{ favoriteDestinations().length }}</div>
+              <small class="text-muted fw-semibold">Bookmarked Favorites</small>
+            </div>
+          </div>
+
+          <div class="col-sm-12 col-md-4">
+            <div class="p-3 bg-light rounded-3">
+              <div class="fs-3 fw-bold text-success">100%</div>
+              <small class="text-muted fw-semibold">Grounded Data Accuracy</small>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section: My Saved Trips -->
+      <div class="mb-5">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <div>
+            <h3 class="fs-4 fw-bold text-dark mb-1">Saved Vacation Itineraries</h3>
+            <p class="text-muted small mb-0">Your calculated trip budgets and daily schedules.</p>
+          </div>
+          <a routerLink="/planner" class="btn btn-roamly-primary btn-sm">
+            + Build New Itinerary
+          </a>
+        </div>
+
+        @if (tripService.savedTrips().length > 0) {
+          <div class="row g-4">
+            @for (trip of tripService.savedTrips(); track trip.id) {
+              <div class="col-md-6 col-lg-4">
+                <div class="bg-white p-4 rounded-4 border shadow-sm h-100 d-flex flex-column">
+                  <div class="d-flex justify-content-between align-items-start mb-2">
+                    <h4 class="fs-5 fw-bold text-dark mb-0">{{ trip.title }}</h4>
+                    <button
+                      type="button"
+                      class="btn btn-outline-danger btn-sm p-1 px-2"
+                      (click)="tripService.deleteTrip(trip.id)"
+                      title="Delete">
+                      🗑️
+                    </button>
+                  </div>
+
+                  <span class="text-primary small fw-semibold mb-3">📍 {{ trip.destinationName }}, {{ trip.country }}</span>
+
+                  <div class="d-flex flex-column gap-1 small text-muted mb-3 flex-grow-1">
+                    <span>📅 {{ trip.startDate }} to {{ trip.endDate }} ({{ trip.durationDays }} Days)</span>
+                    <span>👥 {{ trip.totalTravelers }} Travelers • <strong class="text-capitalize">{{ trip.style }}</strong> Tier</span>
+                    <span>💰 Budget: <strong class="text-dark">{{ trip.totalCost }}</strong></span>
+                    <span class="badge bg-light text-dark border align-self-start mt-2">Status: {{ trip.status }}</span>
+                  </div>
+
+                  <div class="pt-3 border-top d-flex justify-content-between align-items-center">
+                    <small class="text-muted">Saved {{ trip.createdAt }}</small>
+                    <a [routerLink]="['/planner']" [queryParams]="{dest: trip.destinationId}" class="btn btn-roamly-outline btn-sm">
+                      Load in Planner
+                    </a>
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
+        } @else {
+          <div class="p-5 text-center bg-white rounded-4 border border-dashed">
+            <p class="text-muted mb-3">You don't have any saved trip plans yet.</p>
+            <a routerLink="/planner" class="btn btn-roamly-primary">Create Your First Plan ➔</a>
+          </div>
+        }
+      </div>
+
+      <!-- Section: Favorite Destinations -->
+      <div>
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <div>
+            <h3 class="fs-4 fw-bold text-dark mb-1">Bookmarked Destinations</h3>
+            <p class="text-muted small mb-0">Destinations you've marked with a heart.</p>
+          </div>
+          <a routerLink="/destinations" class="btn btn-roamly-outline btn-sm">
+            Browse More
+          </a>
+        </div>
+
+        @if (favoriteDestinations().length > 0) {
+          <div class="destinations-grid">
+            @for (dest of favoriteDestinations(); track dest.id) {
+              <app-destination-card [destination]="dest"></app-destination-card>
+            }
+          </div>
+        } @else {
+          <div class="p-5 text-center bg-white rounded-4 border border-dashed">
+            <p class="text-muted mb-3">No favorites saved yet. Browse our catalog and click the ❤️ icon!</p>
+            <a routerLink="/destinations" class="btn btn-roamly-primary">Explore Catalog ➔</a>
+          </div>
+        }
+      </div>
+
+    } @else {
+      <!-- Guest view if accessed directly -->
+      <div class="text-center p-5 bg-white rounded-4 border shadow-sm">
+        <h3 class="fw-bold mb-3">Please Sign In</h3>
+        <p class="text-muted mb-4">You need an active session to view your profile details.</p>
+        <a routerLink="/login" class="btn btn-roamly-primary">Go to Login</a>
+      </div>
+    }
+  </div>
+</main>
+
+<app-quick-view-modal></app-quick-view-modal>

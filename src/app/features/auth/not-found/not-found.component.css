@@ -1,0 +1,9 @@
+.not-found-section {
+  min-height: 75vh;
+  display: flex;
+  align-items: center;
+}
+
+.not-found-card {
+  max-width: 580px;
+}

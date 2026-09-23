@@ -1,0 +1,92 @@
+<main class="section register-section py-5">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-md-8 col-lg-5">
+        <div class="bg-white p-4 p-md-5 rounded-4 border shadow-sm">
+          <div class="text-center mb-4">
+            <div class="register-brand-icon d-inline-flex align-items-center justify-content-center rounded-3 mb-3">
+              🎒
+            </div>
+            <h1 class="fs-3 fw-bold text-dark mb-1">Join Roamly</h1>
+            <p class="text-muted small">Create your account to save itineraries and favorite spots.</p>
+          </div>
+
+          <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+            <!-- Name -->
+            <div class="mb-3">
+              <label for="reg-name" class="form-label fw-semibold">Full Name</label>
+              <input
+                type="text"
+                id="reg-name"
+                class="form-control"
+                [class.is-invalid]="isFieldInvalid('name')"
+                formControlName="name"
+                placeholder="e.g. Elena Rostova" />
+              @if (isFieldInvalid('name')) {
+                <div class="invalid-feedback">Name must be at least 2 characters.</div>
+              }
+            </div>
+
+            <!-- Email -->
+            <div class="mb-3">
+              <label for="reg-email" class="form-label fw-semibold">Email Address</label>
+              <input
+                type="email"
+                id="reg-email"
+                class="form-control"
+                [class.is-invalid]="isFieldInvalid('email')"
+                formControlName="email"
+                placeholder="e.g. elena@example.com" />
+              @if (isFieldInvalid('email')) {
+                <div class="invalid-feedback">Please enter a valid email address.</div>
+              }
+            </div>
+
+            <!-- Password -->
+            <div class="mb-3">
+              <label for="reg-password" class="form-label fw-semibold">Password</label>
+              <input
+                type="password"
+                id="reg-password"
+                class="form-control"
+                [class.is-invalid]="isFieldInvalid('password')"
+                formControlName="password"
+                placeholder="Minimum 6 characters" />
+              @if (isFieldInvalid('password')) {
+                <div class="invalid-feedback">Password must be at least 6 characters.</div>
+              }
+            </div>
+
+            <!-- Account Role Selection (For Easy Testing) -->
+            <div class="mb-4">
+              <label for="reg-role" class="form-label fw-semibold">Account Role</label>
+              <select id="reg-role" class="form-select" formControlName="role">
+                <option value="user">Standard Traveler (User Side)</option>
+                <option value="admin">Administrator (User + Admin Portal)</option>
+              </select>
+            </div>
+
+            <!-- Submit Button -->
+            <button
+              type="submit"
+              class="btn btn-roamly-primary w-100 py-3 mb-3"
+              [disabled]="isSubmitting()">
+              @if (isSubmitting()) {
+                <span>Creating Account... ⏳</span>
+              } @else {
+                <span>Create Account ➔</span>
+              }
+            </button>
+
+            <div class="text-center">
+              <small class="text-muted">
+                Already registered?
+                <a routerLink="/login" class="text-primary fw-bold text-decoration-none">Sign in here</a>
+              </small>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>

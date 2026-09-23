@@ -1,0 +1,20 @@
+.destinations-hero {
+  background: linear-gradient(135deg, #0f172a, #0369a1);
+  color: #fff;
+  padding: 3.5rem 0 3rem;
+  text-align: center;
+}
+
+.destinations-hero-badge {
+  background: rgba(255, 255, 255, 0.2);
+  color: #fff;
+}
+
+.destinations-hero-subtitle {
+  color: rgba(255, 255, 255, 0.85);
+  max-width: 620px;
+}
+
+.empty-state-copy {
+  max-width: 450px;
+}

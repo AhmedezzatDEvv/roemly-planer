@@ -1,0 +1,12 @@
+.inquiry-preview {
+  max-width: 320px;
+}
+
+.inquiry-modal {
+  max-width: 580px;
+}
+
+.inquiry-message {
+  white-space: pre-wrap;
+  line-height: 1.6;
+}

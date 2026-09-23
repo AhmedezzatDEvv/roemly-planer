@@ -1,0 +1,19 @@
+.modal-title {
+  font-size: 1.8rem;
+}
+
+.modal-description {
+  line-height: 1.7;
+}
+
+.modal-highlights {
+  font-size: 0.95rem;
+}
+
+.modal-details {
+  background-color: var(--bg-subtle);
+}
+
+.modal-price {
+  color: var(--primary);
+}

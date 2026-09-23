@@ -1,0 +1,13 @@
+<div id="toast-container" aria-live="polite" aria-atomic="true">
+  @for (toast of toastService.toasts(); track toast.id) {
+    <div class="roamly-toast" [ngClass]="'toast-' + toast.type">
+      <span>
+        @if (toast.type === 'success') { ✅ }
+        @else if (toast.type === 'error') { ⚠️ }
+        @else { ℹ️ }
+      </span>
+      <span class="flex-grow-1">{{ toast.message }}</span>
+      <button type="button" class="btn-close btn-close-white ms-2" (click)="toastService.remove(toast.id)" aria-label="Close"></button>
+    </div>
+  }
+</div>

@@ -1,0 +1,52 @@
+@if (destService.quickViewDestination(); as dest) {
+  <div class="modal-overlay" (click)="onOverlayClick($event)" role="dialog" aria-modal="true" [attr.aria-labelledby]="'modal-title-' + dest.id">
+    <div class="modal-box">
+      <button type="button" class="modal-close-btn" (click)="close()" aria-label="Close details modal">✕</button>
+
+      <img class="modal-header-img" [src]="dest.image" [alt]="dest.name + ', ' + dest.country" />
+
+      <div class="modal-content-body">
+        <span class="section-badge">{{ dest.region }} • {{ dest.category }} • {{ dest.duration }}</span>
+        <h2 [id]="'modal-title-' + dest.id" class="section-title modal-title mt-2 mb-3">
+          {{ dest.name }}, {{ dest.country }}
+        </h2>
+
+        <p class="text-secondary modal-description mb-4">{{ dest.description }}</p>
+
+        <h4 class="fw-bold mb-2 text-dark fs-6">Top Experiences & Highlights</h4>
+        <ul class="d-flex flex-column gap-2 mb-4 p-0 list-unstyled text-secondary modal-highlights">
+          @for (highlight of dest.highlights; track highlight) {
+            <li class="d-flex align-items-start gap-2">
+              <span>✨</span>
+              <span>{{ highlight }}</span>
+            </li>
+          }
+        </ul>
+
+        <div class="row g-3 p-3 rounded mb-4 modal-details">
+          <div class="col-sm-6">
+            <strong class="d-block text-dark mb-1">🌤️ Best Season:</strong>
+            <span class="text-muted small">{{ dest.bestSeason }}</span>
+          </div>
+          <div class="col-sm-6">
+            <strong class="d-block text-dark mb-1">💰 Daily Estimate:</strong>
+            <span class="fw-bold modal-price">
+              ${{ dest.dailyCost }} / day ({{ dest.budgetLevel }})
+            </span>
+          </div>
+          <div class="col-12 mt-2 pt-2 border-top">
+            <strong class="d-block text-dark mb-1">🌡️ Climate:</strong>
+            <span class="text-muted small">{{ dest.climate }}</span>
+          </div>
+        </div>
+
+        <div class="d-flex justify-content-end gap-2">
+          <button type="button" class="btn btn-roamly-outline" (click)="close()">Close</button>
+          <a [routerLink]="['/planner']" [queryParams]="{dest: dest.id}" (click)="close()" class="btn btn-roamly-primary">
+            Plan This Trip ➔
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+}

@@ -1,0 +1,17 @@
+<!-- Global Toast Notifications -->
+<app-toast></app-toast>
+
+<!-- Public Header (Shown when not in Admin Portal) -->
+@if (!isAdminRoute()) {
+	<app-header></app-header>
+}
+
+<!-- Main Router Outlet -->
+<div class="app-main-content">
+	<router-outlet></router-outlet>
+</div>
+
+<!-- Public Footer (Shown when not in Admin Portal) -->
+@if (!isAdminRoute()) {
+	<app-footer></app-footer>
+}

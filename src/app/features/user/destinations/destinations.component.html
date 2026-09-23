@@ -1,0 +1,159 @@
+<!-- 1. Page Header Banner -->
+<section class="destinations-hero">
+  <div class="container">
+    <span class="section-badge destinations-hero-badge">Explore The World</span>
+    <h1 class="section-title text-white mb-2">Handpicked Destinations</h1>
+    <p class="section-subtitle destinations-hero-subtitle mx-auto">
+      Filter by region, travel style, or budget to discover your next getaway. Click Quick View for full details or Plan Trip to build your itinerary.
+    </p>
+  </div>
+</section>
+
+<!-- 2. Main Catalog with Filters & Grid -->
+<main class="section">
+  <div class="container">
+    <!-- Interactive Filter Controls -->
+    <div class="filter-wrapper">
+      <!-- Top Row: Search & Region Pills -->
+      <div class="filter-row-top">
+        <div class="search-box-wrap">
+          <span class="search-icon">🔍</span>
+          <input
+            type="text"
+            [ngModel]="destService.filterCriteria().searchQuery"
+            (ngModelChange)="onSearchChange($event)"
+            placeholder="Search by destination name, country, or keyword (e.g. temples, beach, hiking)..."
+            aria-label="Search destinations" />
+        </div>
+
+        <div class="filter-pills-row">
+          <button
+            type="button"
+            class="filter-pill-btn"
+            [class.active]="destService.filterCriteria().region === 'all'"
+            (click)="setRegion('all')">
+            All Regions
+          </button>
+          <button
+            type="button"
+            class="filter-pill-btn"
+            [class.active]="destService.filterCriteria().region.toLowerCase() === 'europe'"
+            (click)="setRegion('Europe')">
+            Europe
+          </button>
+          <button
+            type="button"
+            class="filter-pill-btn"
+            [class.active]="destService.filterCriteria().region.toLowerCase() === 'asia'"
+            (click)="setRegion('Asia')">
+            Asia
+          </button>
+          <button
+            type="button"
+            class="filter-pill-btn"
+            [class.active]="destService.filterCriteria().region.toLowerCase() === 'americas'"
+            (click)="setRegion('Americas')">
+            Americas
+          </button>
+          <button
+            type="button"
+            class="filter-pill-btn"
+            [class.active]="destService.filterCriteria().region.toLowerCase() === 'africa'"
+            (click)="setRegion('Africa')">
+            Africa
+          </button>
+          <button
+            type="button"
+            class="filter-pill-btn"
+            [class.active]="destService.filterCriteria().region.toLowerCase() === 'oceania'"
+            (click)="setRegion('Oceania')">
+            Oceania
+          </button>
+        </div>
+      </div>
+
+      <!-- Secondary Row: Category, Budget, Sort & Reset -->
+      <div class="filter-row-secondary">
+        <div class="filter-secondary-group">
+          <div class="d-flex align-items-center">
+            <label for="filter-category" class="small fw-bold text-muted me-2 mb-0">Style:</label>
+            <select
+              id="filter-category"
+              class="filter-select"
+              [ngModel]="destService.filterCriteria().category"
+              (ngModelChange)="setCategory($event)">
+              <option value="all">All Styles</option>
+              <option value="Cultural">Cultural</option>
+              <option value="Coastal">Coastal</option>
+              <option value="Nature">Nature</option>
+              <option value="Adventure">Adventure</option>
+              <option value="Luxury">Luxury</option>
+            </select>
+          </div>
+
+          <div class="d-flex align-items-center">
+            <label for="filter-budget" class="small fw-bold text-muted me-2 mb-0">Budget:</label>
+            <select
+              id="filter-budget"
+              class="filter-select"
+              [ngModel]="destService.filterCriteria().budget"
+              (ngModelChange)="setBudget($event)">
+              <option value="all">All Budgets</option>
+              <option value="$">$ Budget (&lt;$100/day)</option>
+              <option value="$$">$$ Moderate ($100-$170/day)</option>
+              <option value="$$$">$$$ Premium ($170-$250/day)</option>
+              <option value="$$$$">$$$$ Luxury ($250+/day)</option>
+            </select>
+          </div>
+
+          <div class="d-flex align-items-center">
+            <label for="filter-sort" class="small fw-bold text-muted me-2 mb-0">Sort By:</label>
+            <select
+              id="filter-sort"
+              class="filter-select"
+              [ngModel]="destService.filterCriteria().sortBy"
+              (ngModelChange)="setSort($event)">
+              <option value="recommended">Recommended</option>
+              <option value="price-low">Price: Low to High</option>
+              <option value="price-high">Price: High to Low</option>
+              <option value="rating">Highest Rated</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="d-flex align-items-center gap-3">
+          <span class="small fw-bold text-muted">
+            Showing {{ destService.filteredDestinations().length }} destination{{ destService.filteredDestinations().length === 1 ? '' : 's' }}
+          </span>
+          <button type="button" class="btn btn-roamly-outline btn-sm" (click)="resetFilters()">
+            Reset Filters ↺
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Destinations Grid -->
+    @if (destService.filteredDestinations().length > 0) {
+      <div class="destinations-grid">
+        @for (dest of destService.filteredDestinations(); track dest.id) {
+          <app-destination-card [destination]="dest"></app-destination-card>
+        }
+      </div>
+    } @else {
+      <!-- Empty State -->
+      <div class="text-center p-5 bg-white rounded-4 border border-dashed my-4">
+        <div class="fs-1 mb-3">🌍</div>
+        <h3 class="fw-bold text-dark mb-2">No destinations found</h3>
+        <p class="text-muted mx-auto mb-4 empty-state-copy">
+          We couldn't find any destinations matching your current filters. Try changing your search keywords or resetting filters.
+        </p>
+        <button type="button" class="btn btn-roamly-primary" (click)="resetFilters()">
+          Reset All Filters ↺
+        </button>
+      </div>
+    }
+  </div>
+</main>
+
+<!-- Accessible Quick View Modal Dialog -->
+<app-quick-view-modal></app-quick-view-modal>

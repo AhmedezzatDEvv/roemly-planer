@@ -1,0 +1,20 @@
+.home-hero-content {
+  max-width: 840px;
+}
+
+.step-number-primary {
+  color: var(--primary);
+}
+
+.step-number-accent {
+  color: var(--accent);
+}
+
+.step-number-purple {
+  color: #9333ea;
+}
+
+.ai-promo-section {
+  background: linear-gradient(135deg, #0369a1, #0f172a);
+  color: #fff;
+}

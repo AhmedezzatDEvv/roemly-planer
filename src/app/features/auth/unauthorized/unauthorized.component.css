@@ -1,0 +1,9 @@
+.unauthorized-section {
+  min-height: 75vh;
+  display: flex;
+  align-items: center;
+}
+
+.unauthorized-card {
+  max-width: 580px;
+}
